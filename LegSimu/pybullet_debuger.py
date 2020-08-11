@@ -13,7 +13,9 @@ import sys
 class pybulletDebug:
     def __init__(self):
         #Camera paramers to be able to yaw pitch and zoom the camera (Focus remains on the robot) 
-        
+        self.cyaw=90
+        self.cpitch=-7
+        self.cdist=0.15
         time.sleep(0.5)
         
         self.xId = p.addUserDebugParameter("x" , -0.10 , 0.10 , 0.)
@@ -29,10 +31,23 @@ class pybulletDebug:
     
     def cam_and_robotstates(self , boxId):
                 ####orientacion de la camara
-        
+        cubePos, cubeOrn = p.getBasePositionAndOrientation(boxId)
+        p.resetDebugVisualizerCamera( cameraDistance=self.cdist, cameraYaw=self.cyaw, cameraPitch=self.cpitch, cameraTargetPosition=cubePos)
         keys = p.getKeyboardEvents()
-        #Keys to change camera
         
+        #Keys to change camera
+        if keys.get(100):  #D
+            self.cyaw+=1
+        if keys.get(97):   #A
+            self.cyaw-=1
+        if keys.get(99):   #C
+            self.cpitch+=1
+        if keys.get(102):  #F
+            self.cpitch-=1
+        if keys.get(122):  #Z
+            self.cdist+=.01
+        if keys.get(120):  #X
+            self.cdist-=.01
         if keys.get(27):  #ESC
             p.disconnect()
             sys.exit()
@@ -45,3 +60,4 @@ class pybulletDebug:
         T = p.readUserDebugParameter(self.periodId)
         
         return pos , orn , L , angle , Lrot , T
+
